@@ -1,0 +1,6 @@
+OBJS =		trunkey.o JVMLoader.o JVMService.o
+CPPS =		JVMService.cpp
+all:$(CPPS)
+	gcc -o libturnkey.dll -shared -c $(CPPS)
+
+	
