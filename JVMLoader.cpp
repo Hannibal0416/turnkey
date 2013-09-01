@@ -11,7 +11,6 @@ namespace jvm {
 
 
 JVMLoader::JVMLoader() {
-	std::cout << "JVMLoader()" << std::endl;
 }
 
 JVMLoader::~JVMLoader() {
@@ -21,7 +20,7 @@ JNIEnv* JVMLoader::env = NULL;
 JavaVM* JVMLoader::jvm = NULL;
 
 bool JVMLoader::BeginJVM() {
-
+	std::cout << "BeginJVM()" << std::endl;
 	JavaVMOption options[3];
 	JavaVMInitArgs vm_args;
 
@@ -33,7 +32,6 @@ bool JVMLoader::BeginJVM() {
 	for (int i = 0; i < files.size(); i++) {
 		if (! (files[i] == ".") && !(files[i] == "..")) {
 			libs += "./lib/" + files[i] + ";";
-			std::cout << "./lib/" << files[i] << std::endl;
 		}
 	}
 

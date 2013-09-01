@@ -11,9 +11,9 @@
 #include "JVMLoader.h"
 
 namespace jvm {
-class JVMService: public jvm::JVMLoader {
+class SignatureBridge: public jvm::JVMLoader {
 public:
-	JVMService();
+	SignatureBridge();
 	bool instance(char* className);
 	char* testString (char* str);
 };

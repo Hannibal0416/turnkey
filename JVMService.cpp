@@ -11,10 +11,10 @@ namespace jvm {
 jclass clazz;    //全局变量，用来传递class
 jobject object;  //全局变量，用来传递object
 
-JVMService::JVMService() {
+SignatureBridge::SignatureBridge() {
 }
 
-bool JVMService::instance(char* className){
+bool SignatureBridge::instance(char* className){
 	if (env == NULL) {
 		std::cout << "JVM is not created" << std::endl;
 		return false;
@@ -25,7 +25,7 @@ bool JVMService::instance(char* className){
 	}
 }
 
-char* JVMService::testString(char* str) {
+char* SignatureBridge::testString(char* str) {
 
 	std::cout << clazz << std::endl;
 	jmethodID mid = env->GetMethodID(clazz, "testString",
