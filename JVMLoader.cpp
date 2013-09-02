@@ -19,8 +19,7 @@ JVMLoader::~JVMLoader() {
 JNIEnv* JVMLoader::env = NULL;
 JavaVM* JVMLoader::jvm = NULL;
 
-bool JVMLoader::BeginJVM() {
-	std::cout << "BeginJVM()" << std::endl;
+bool JVMLoader::StartJVM() {
 	JavaVMOption options[3];
 	JavaVMInitArgs vm_args;
 
@@ -58,7 +57,7 @@ bool JVMLoader::BeginJVM() {
 	}
 }
 
-bool JVMLoader::EndJVM() {
+bool JVMLoader::DestroyJVM() {
 	jvm->DestroyJavaVM();
 	return true;
 }
