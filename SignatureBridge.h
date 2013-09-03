@@ -15,16 +15,19 @@ class SignatureBridge: public jvm::JVMLoader {
 public:
 	SignatureBridge();
 	bool instance();
-	char* testString (char* str);
 	bool sign(int invoiceCount, char* format, char* migVer, char* json,
 			char* certPath, char* certPassword, char* fromPartyId,
 			char* fromRoutingId, char* fromVacDescription, char* toPartyId,
 			char* toRoutingId, char* toVacDescription);
 	bool unSign(char* unSignature, bool isJSON);
-	string getSignature();
-	string getErrMsg();
-	string getMigMsg();
-	string testString(char* str);
+	std::string getSignature();
+	std::string getErrMsg();
+	std::string getMigMsg();
+	std::string testString(char* str);
+private :
+	std::string errMsg;
+	std::string migMsg;
+	std::string signatureStr;
 };
 
 } /* namespace jvm */

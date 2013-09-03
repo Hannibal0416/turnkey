@@ -1,5 +1,6 @@
 OBJS =		JVMLoader.o SignatureBridge.o TurnkeyBridge.o
-CPPS =		TurnkeyBridge.cpp
+CPPS =		JVMLoader.cpp SignatureBridge.cpp TurnkeyBridge.cpp
 #	g++ -shared -o libTurnkeyAPIBridge.dll TurnkeyBridge.o JVMService.o JVMLoader.o 
-all:
-	g++ -shared -o libTurnkeyAPIBridge.dll $(OBJS)
+dll:
+	g++ -c -fPIC $(CPPS)
+	g++ -shared -fPIC -o libTurnkeyAPIBridge.dll $(OBJS)

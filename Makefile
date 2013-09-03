@@ -1,10 +1,10 @@
 CXXFLAGS =	-O2 -g -Wall -fmessage-length=0
 
-OBJS =		trunkey.o JVMLoader.o SignatureBridge.o TurnkeyBridge.o
+OBJS =		turnkey.o JVMLoader.o SignatureBridge.o TurnkeyBridge.o
 
 LIBS =
 
-TARGET =	trunkey.exe
+TARGET =	turnkey.exe
 
 $(TARGET):	$(OBJS)
 	$(CXX) -o $(TARGET) $(OBJS) $(LIBS)

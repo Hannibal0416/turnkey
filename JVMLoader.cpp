@@ -16,33 +16,54 @@ JVMLoader::JVMLoader() {
 JVMLoader::~JVMLoader() {
 }
 
-JNIEnv* JVMLoader::env = NULL;
+
 JavaVM* JVMLoader::jvm = NULL;
 
 bool JVMLoader::StartJVM() {
-	JavaVMOption options[3];
+	JavaVMOption options[4];
 	JavaVMInitArgs vm_args;
+	JNIEnv* env = NULL;
+	LPSTR lpszBuffer = (LPSTR)calloc(4096,sizeof(TCHAR));
+	DWORD dwRet = GetEnvironmentVariable(TEXT("TURNKEY_HOME"),lpszBuffer,4096);
+	std::string jreHome;
+	std::string libDir;
+	//資料夾路徑(絕對位址or相對位址)
+	if(dwRet != 0) {
+		libDir = lpszBuffer;
+		libDir += "/lib/";
+	} else {
+		libDir = "./lib/";
+	}
+	dwRet = GetEnvironmentVariable(TEXT("JRE_HOME"),lpszBuffer,4096);
+	if(dwRet != 0) {
+		jreHome = lpszBuffer;
+		jreHome += "/bin/server/jvm.dll";
+	} else {
+		jreHome = "./jre7/bin/server/jvm.dll";
+	}
+	free(lpszBuffer);
 
 	std::string libs = "-Djava.class.path=./;";
-	std::string dir = std::string("./lib");//資料夾路徑(絕對位址or相對位址)
+
 	std::vector<std::string> files = std::vector<std::string>();
-	getdir(dir, files);
+	getdir(libDir, files);
 	//輸出資料夾和檔案名稱於螢幕
 	for (int i = 0; i < files.size(); i++) {
 		if (! (files[i] == ".") && !(files[i] == "..")) {
-			libs += "./lib/" + files[i] + ";";
+			libs += libDir + files[i] + ";";
 		}
 	}
 
 	options[0].optionString = "-Djava.compiler=NONE";
 	options[1].optionString = (char*) libs.c_str();
 	options[2].optionString = "-verbose:NONE";
+	options[3].optionString = "-Dfile.encoding=UTF-8";
 
 	vm_args.version = JNI_VERSION_1_6;
 	vm_args.options = options;
-	vm_args.nOptions = 3;
+	vm_args.nOptions = 4;
 
-	HINSTANCE hInstance = ::LoadLibrary("./jre7/bin/server/jvm.dll");
+	HINSTANCE hInstance = ::LoadLibrary(jreHome.c_str());
 
 	if (hInstance == NULL)
 	{

@@ -26,7 +26,6 @@ public:
     JVMLoader();
     virtual ~JVMLoader();
 protected:
-    static JNIEnv* env;
     static JavaVM* jvm;
 };
 

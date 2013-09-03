@@ -7,28 +7,24 @@
 
 #include "TurnkeyBridge.h"
 
-static SignatureBridge *sign;
-JNIEXPORT std::string testString(char* str) {
-	sign->instance((char*) "com/test/StringTest");
-	sign->testString(str);
-	return "ok";
+jvm::SignatureBridge signBridge;
+
+JNIEXPORT void initJVM() {
+	if (!signBridge.isJVMAlive()) {
+		signBridge.StartJVM();
+		std::cout << "StartJVM()" << std::endl;
+	}
 }
 ;
 
-JNIEXPORT void init() {
-	if (*sign == NULL) {
-		*sign = new jvm::SignatureBridge();
-		cout << "init()" << endl;
-	}
-	if (!sign->isJVMAlive()) {
-		sign->StartJVM();
-		cout << "StartJVM()" << endl;
-	}
+JNIEXPORT void instance() {
+	signBridge.instance();
 }
 ;
+
 
 JNIEXPORT bool unSign(char* unSignature, bool isJSON) {
-	return sign->unSign(unSignature, isJSON);
+	return signBridge.unSign(unSignature, isJSON);
 }
 ;
 
@@ -36,26 +32,26 @@ JNIEXPORT bool sign(int invoiceCount, char* format, char* migVer, char* json,
 		char* certPath, char* certPassword, char* fromPartyId,
 		char* fromRoutingId, char* fromVacDescription, char* toPartyId,
 		char* toRoutingId, char* toVacDescription) {
-	return sign->sign(invoiceCount, format, migVer, json, certPath,
+	return signBridge.sign(invoiceCount, format, migVer, json, certPath,
 			certPassword, fromPartyId, fromRoutingId, fromVacDescription,
 			toPartyId, toRoutingId, toVacDescription);
 
 }
 ;
 JNIEXPORT std::string testString(char* str) {
-	return sign->testString(str);
+	return signBridge.testString(str);
 }
 ;
 JNIEXPORT std::string getSignature() {
-	return sign->getSignature();
+	return signBridge.getSignature();
 }
 ;
 JNIEXPORT std::string getErrMsg() {
-	return sign->getErrMsg();
+	return signBridge.getErrMsg();
 }
 ;
 JNIEXPORT std::string getMigMsg() {
-	return sign->getMigMsg();
+	return signBridge.getMigMsg();
 }
 ;
 
