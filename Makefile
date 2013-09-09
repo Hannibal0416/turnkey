@@ -1,6 +1,6 @@
 CXXFLAGS =	-O2 -g -Wall -fmessage-length=0
 
-OBJS =		turnkey.o JVMLoader.o SignatureBridge.o TurnkeyBridge.o
+OBJS =		turnkey.o JVMLoader.o SignatureBridge.o GatewayBridge.o
 
 LIBS =
 

@@ -9,37 +9,44 @@
 
 namespace jvm {
 
-
 JVMLoader::JVMLoader() {
 }
 
 JVMLoader::~JVMLoader() {
 }
 
-
 JavaVM* JVMLoader::jvm = NULL;
 
 bool JVMLoader::StartJVM() {
-	JavaVMOption options[4];
+	std::cout << "JVMLoader::StartJVM()" << std::endl;
+	JavaVMOption options[5];
 	JavaVMInitArgs vm_args;
 	JNIEnv* env = NULL;
-	LPSTR lpszBuffer = (LPSTR)calloc(4096,sizeof(TCHAR));
-	DWORD dwRet = GetEnvironmentVariable(TEXT("TURNKEY_HOME"),lpszBuffer,4096);
 	std::string jreHome;
 	std::string libDir;
-	//資料夾路徑(絕對位址or相對位址)
+	std::string dllDir = "-Djava.library.path=";
+	//char* pathvar = getenv("GATEWAY_HOME");
+	LPSTR lpszBuffer = (LPSTR)calloc(4096,sizeof(TCHAR));
+	DWORD dwRet = GetEnvironmentVariable(TEXT("GATEWAY_HOME"),lpszBuffer,4096);
+	std::cout << lpszBuffer << std::endl;
 	if(dwRet != 0) {
 		libDir = lpszBuffer;
+		dllDir += lpszBuffer;
 		libDir += "/lib/";
+		dllDir += "\\dll\\";
 	} else {
-		libDir = "./lib/";
+		//libDir = "D:/APICSharp/lib/";
+		std::cout << "GATEWAY_HOME未設定" << std::endl;
+		return false;
 	}
-	dwRet = GetEnvironmentVariable(TEXT("JRE_HOME"),lpszBuffer,4096);
+	dwRet = GetEnvironmentVariable(TEXT("JVM_LOC"),lpszBuffer,4096);
 	if(dwRet != 0) {
 		jreHome = lpszBuffer;
-		jreHome += "/bin/server/jvm.dll";
+		jreHome += "/jvm.dll";
 	} else {
-		jreHome = "./jre7/bin/server/jvm.dll";
+		//jreHome = "./jre6/bin/client/jvm.dll";
+		std::cout << "JVM_LOC未設定" << std::endl;
+		return false;
 	}
 	free(lpszBuffer);
 
@@ -47,28 +54,27 @@ bool JVMLoader::StartJVM() {
 
 	std::vector<std::string> files = std::vector<std::string>();
 	getdir(libDir, files);
-	//輸出資料夾和檔案名稱於螢幕
 	for (int i = 0; i < files.size(); i++) {
 		if (! (files[i] == ".") && !(files[i] == "..")) {
 			libs += libDir + files[i] + ";";
 		}
 	}
-
-	options[0].optionString = "-Djava.compiler=NONE";
-	options[1].optionString = (char*) libs.c_str();
+	std::cout << dllDir << std::endl;
+	//options[0].optionString = "-Djava.compiler=NONE";
+	options[1].optionString = (char*)libs.c_str();
 	options[2].optionString = "-verbose:NONE";
 	options[3].optionString = "-Dfile.encoding=UTF-8";
-
+	options[4].optionString = (char*)dllDir.c_str();
 	vm_args.version = JNI_VERSION_1_6;
 	vm_args.options = options;
-	vm_args.nOptions = 4;
+	vm_args.nOptions = 5;
 
 	HINSTANCE hInstance = ::LoadLibrary(jreHome.c_str());
-
 	if (hInstance == NULL)
 	{
 		return false;
 	}
+
 	PFunCreateJavaVM funCreateJavaVM = (PFunCreateJavaVM)::GetProcAddress(hInstance, "JNI_CreateJavaVM");
 	int res = (*funCreateJavaVM)(&jvm, (void**)&env, &vm_args);
 	if(res >= 0 ){
@@ -79,6 +85,8 @@ bool JVMLoader::StartJVM() {
 }
 
 bool JVMLoader::DestroyJVM() {
+	JNIEnv *env;
+	jvm->AttachCurrentThread((void **) &env, NULL);
 	jvm->DestroyJavaVM();
 	return true;
 }
@@ -90,17 +98,18 @@ bool JVMLoader::isJVMAlive() {
 		return false;
 	}
 }
+
 int getdir(std::string dir, std::vector<std::string> &files) {
-	DIR *dp; //創立資料夾指標
+	DIR *dp;
 	struct dirent *dirp;
 	if ((dp = opendir(dir.c_str())) == NULL) {
 		std::cout << "Error(" << errno << ") opening " << dir << std::endl;
 		return errno;
 	}
-	while ((dirp = readdir(dp)) != NULL) { //如果dirent指標非空
-		files.push_back(std::string(dirp->d_name)); //將資料夾和檔案名放入vector
+	while ((dirp = readdir(dp)) != NULL) {
+		files.push_back(std::string(dirp->d_name));
 	}
-	closedir(dp); //關閉資料夾指標
+	closedir(dp);
 	return 0;
 }
 } /* namespace jvm */
