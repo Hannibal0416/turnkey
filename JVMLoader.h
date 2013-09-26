@@ -20,13 +20,14 @@ int getdir(std::string dir, std::vector<std::string> &files);
 class JVMLoader
 {
 public:
-    static bool StartJVM();
-    static bool DestroyJVM();
-    static bool isJVMAlive();
+    bool StartJVM();
+    bool DestroyJVM();
+    bool isJVMAlive();
     JVMLoader();
     virtual ~JVMLoader();
 protected:
     static JavaVM* jvm;
+    static HINSTANCE hInstance;
 };
 
 } /* namespace jvm */

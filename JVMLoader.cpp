@@ -1,9 +1,3 @@
-/*
- * JVMLoader.cpp
- *
- *  Created on: 2013/8/31
- *      Author: Hannibal
- */
 
 #include "JVMLoader.h"
 
@@ -16,6 +10,7 @@ JVMLoader::~JVMLoader() {
 }
 
 JavaVM* JVMLoader::jvm = NULL;
+HINSTANCE JVMLoader::hInstance = NULL;
 
 bool JVMLoader::StartJVM() {
 	std::cout << "JVMLoader::StartJVM()" << std::endl;
@@ -26,7 +21,7 @@ bool JVMLoader::StartJVM() {
 	std::string libDir;
 	std::string dllDir = "-Djava.library.path=";
 	//char* pathvar = getenv("GATEWAY_HOME");
-	LPSTR lpszBuffer = (LPSTR)calloc(4096,sizeof(TCHAR));
+	LPTSTR lpszBuffer = (LPTSTR)calloc(4096,sizeof(TCHAR));
 	DWORD dwRet = GetEnvironmentVariable(TEXT("GATEWAY_HOME"),lpszBuffer,4096);
 	std::cout << lpszBuffer << std::endl;
 	if(dwRet != 0) {
@@ -60,23 +55,24 @@ bool JVMLoader::StartJVM() {
 		}
 	}
 	std::cout << dllDir << std::endl;
-	//options[0].optionString = "-Djava.compiler=NONE";
-	options[1].optionString = (char*)libs.c_str();
-	options[2].optionString = "-verbose:NONE";
-	options[3].optionString = "-Dfile.encoding=UTF-8";
-	options[4].optionString = (char*)dllDir.c_str();
+	options[0].optionString = const_cast<char*>("-Djava.compiler=NONE");
+	options[1].optionString = const_cast<char*>(libs.c_str());
+	options[2].optionString = const_cast<char*>("-verbose:NONE");
+	options[3].optionString = const_cast<char*>("-Dfile.encoding=UTF-8");
+	options[4].optionString = const_cast<char*>(dllDir.c_str());
+
 	vm_args.version = JNI_VERSION_1_6;
 	vm_args.options = options;
 	vm_args.nOptions = 5;
 
-	HINSTANCE hInstance = ::LoadLibrary(jreHome.c_str());
+	hInstance = ::LoadLibrary(jreHome.c_str());
 	if (hInstance == NULL)
 	{
 		return false;
 	}
 
 	PFunCreateJavaVM funCreateJavaVM = (PFunCreateJavaVM)::GetProcAddress(hInstance, "JNI_CreateJavaVM");
-	int res = (*funCreateJavaVM)(&jvm, (void**)&env, &vm_args);
+	int res = (*funCreateJavaVM)(&jvm, reinterpret_cast<void**>(&env), &vm_args);
 	if(res >= 0 ){
 		return true;
 	} else {
@@ -85,9 +81,10 @@ bool JVMLoader::StartJVM() {
 }
 
 bool JVMLoader::DestroyJVM() {
-	JNIEnv *env;
-	jvm->AttachCurrentThread((void **) &env, NULL);
+	JNIEnv *env = NULL;
+	jvm->AttachCurrentThread(reinterpret_cast<void**>(&env) , NULL);
 	jvm->DestroyJavaVM();
+	::FreeLibrary(hInstance);
 	return true;
 }
 
@@ -100,8 +97,8 @@ bool JVMLoader::isJVMAlive() {
 }
 
 int getdir(std::string dir, std::vector<std::string> &files) {
-	DIR *dp;
-	struct dirent *dirp;
+	DIR *dp = NULL;
+	struct dirent *dirp = NULL;
 	if ((dp = opendir(dir.c_str())) == NULL) {
 		std::cout << "Error(" << errno << ") opening " << dir << std::endl;
 		return errno;

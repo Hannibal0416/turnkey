@@ -2,4 +2,4 @@ OBJS =		JVMLoader.o SignatureBridge.o GatewayBridge.o
 CPPS =		JVMLoader.cpp SignatureBridge.cpp GatewayBridge.cpp
 dll:
 	g++ -c -fPIC $(CPPS)
-	g++ -shared -fPIC -o libgateway-api-1.0.0.dll $(OBJS)
+	g++ -shared -fPIC -o libgateway-api-1.0.3.dll $(OBJS)

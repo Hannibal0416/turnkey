@@ -36,42 +36,42 @@ __declspec(dllexport) bool __stdcall destroyJVM() {
 }
 ;
 
-__declspec(dllexport) bool __stdcall unSign(char* unSignature, bool isJSON) {
+__declspec(dllexport) bool __stdcall unSign(wchar_t* unSignature, bool isJSON) {
 	return signBridge.unSign(unSignature, isJSON);
 }
 ;
-__declspec(dllexport) bool __stdcall signString(char* certPath, char* certPassword, char* singStr) {
-	return signBridge.signString(certPath, certPassword,singStr);
+__declspec(dllexport) bool __stdcall signString(wchar_t* certPath,
+		wchar_t* certPassword, wchar_t* singStr) {
+	return signBridge.signString(certPath, certPassword, singStr);
 }
 ;
-__declspec(dllexport) bool __stdcall sign(int invoiceCount, char* format, char* migVer, char* json,
-		char* certPath, char* certPassword, char* fromPartyId,
-		char* fromRoutingId, char* fromVacDescription, char* toPartyId,
-		char* toRoutingId, char* toVacDescription) {
+__declspec(dllexport) bool __stdcall sign(int invoiceCount, wchar_t* format,
+		wchar_t* migVer, wchar_t* json, wchar_t* certPath, wchar_t* certPassword,
+		wchar_t* fromPartyId, wchar_t* fromRoutingId, wchar_t* fromVacDescription,
+		wchar_t* toPartyId, wchar_t* toRoutingId, wchar_t* toVacDescription) {
 	return signBridge.sign(invoiceCount, format, migVer, json, certPath,
 			certPassword, fromPartyId, fromRoutingId, fromVacDescription,
 			toPartyId, toRoutingId, toVacDescription);
 
 }
 ;
-//JNIEXPORT char* testFile(char* str){
-//	signBridge.testFile(str);
-//};
+__declspec(dllexport) void __stdcall testFile(wchar_t* str,wchar_t* path){
+	signBridge.testFile(str,path);
+};
 
-__declspec(dllexport) char* __stdcall testString(char* str) {
+__declspec(dllexport) wchar_t* __stdcall testString(wchar_t* str) {
 	return signBridge.testString(str);
 }
 ;
-
-__declspec(dllexport) char* __stdcall getSignature() {
+__declspec(dllexport) wchar_t* __stdcall getSignature() {
 	return signBridge.getSignature();
 }
 ;
-__declspec(dllexport) char* __stdcall getErrMsg() {
+__declspec(dllexport) wchar_t* __stdcall getErrMsg() {
 	return signBridge.getErrMsg();
 }
 ;
-__declspec(dllexport) char* __stdcall getMigMsg() {
+__declspec(dllexport) wchar_t* __stdcall getMigMsg() {
 	return signBridge.getMigMsg();
 }
 ;
